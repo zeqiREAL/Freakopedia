@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Freakopedia</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #1e293b, #0f172a);
+  color: white;
+  overflow: auto; /* ✅ FIX: scrolling restored */
+}
+
+/* BOOT */
+#boot {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.boot-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.bar {
+  width: 320px;
+  height: 12px;
+  border: 1px solid #00c6ff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00c6ff, #7f00ff);
+  animation: load 3.5s ease forwards;
+}
+
+@keyframes load {
+  100% { width: 100%; }
+}
+
+.boot-text {
+  margin-top: 15px;
+  opacity: 0.7;
+}
+
+/* APP */
+#app {
+  display: none;
+}
+
+/* HEADER */
+header {
+  padding: 18px;
+  text-align: center;
+  background: linear-gradient(90deg, #00c6ff, #7f00ff);
+}
+
+/* NAV */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.05);
+}
+
+nav button {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #00c6ff;
+  font-weight: bold;
+}
+
+/* SEARCH */
+.search {
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+}
+
+input {
+  padding: 10px;
+  width: 260px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 15px;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 15px;
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+/* PAGES */
+.page {
+  display: none;
+  padding: 20px;
+  max-width: 850px;
+  margin: auto;
+}
+
+.page.active {
+  display: block;
+}
+
+.back {
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #00c6ff;
+}
+
+/* AESTHETICS */
+.aes-box {
+  background: rgba(255,255,255,0.07);
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BOOT -->
+<div id="boot">
+  <div class="boot-title">Freakopedia OS</div>
+  <div class="bar"><div class="fill"></div></div>
+  <div class="boot-text" id="bootText">Initializing system...</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<header>
+  <h1>Freakopedia</h1>
+</header>
+
+<nav>
+  <button onclick="showHome(); clickSound()">Home</button>
+  <button onclick="showAesthetics(); clickSound()">Aesthetics</button>
+</nav>
+
+<div class="search">
+  <input id="search" placeholder="Search Windots OS..." oninput="filterCards(); softTick()"/>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="grid">
+
+    <div class="card" onclick="openPage('windots')">Windots</div>
+    <div class="card" onclick="openPage('98')">Windots 98</div>
+    <div class="card" onclick="openPage('xp')">Windots XP</div>
+    <div class="card" onclick="openPage('vista')">Windots Vista</div>
+    <div class="card" onclick="openPage('81')">Windots 8.1</div>
+    <div class="card" onclick="openPage('9')">Windots 9</div>
+
+  </div>
+</div>
+
+<!-- AESTHETICS (FIXED + EXPANDED) -->
+<div id="aesthetics" class="page">
+  <div class="back" onclick="showHome(); clickSound()">← Back</div>
+
+  <h2>Aesthetics of Windots</h2>
+
+  <div class="aes-box">
+    <b>Frutiger Aero</b><br>
+    A glossy, optimistic UI style from the mid-2000s. It uses glass-like surfaces, soft lighting, gradients, and natural imagery (like sky, water, grass).
+    It feels “alive” and polished, like the interface is floating in space rather than sitting on a screen.
+  </div>
+
+  <div class="aes-box">
+    <b>Y2K</b><br>
+    A chaotic early-internet aesthetic with chrome textures, bright colors, and experimental UI design.
+    Everything feels bold, slightly messy, and futuristic in a retro way — like people were guessing what the future would look like.
+  </div>
+
+  <div class="aes-box">
+    <b>Clean Core</b><br>
+    A modern minimalist design style. Flat UI, sharp edges, simple layouts, and focus on usability.
+    It removes decoration and prioritizes structure, speed, and clarity over visual complexity.
+  </div>
+
+</div>
+
+<!-- OS PAGE -->
+<div id="page" class="page"></div>
+
+</div>
+
+<script>
+
+/* ===== BOOT TEXT ===== */
+const bootText = [
+  "Initializing system...",
+  "Loading Windots archive...",
+  "Mounting Freakopedia database...",
+  "Starting UI engine...",
+  "Finalizing boot sequence..."
+];
+
+let i = 0;
+setInterval(() => {
+  document.getElementById("bootText").innerText =
+    bootText[i++ % bootText.length];
+}, 700);
+
+/* END BOOT */
+setTimeout(() => {
+  document.getElementById("boot").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  bootSound();
+}, 3600);
+
+/* ===== PAGES (EXPANDED AGAIN) ===== */
+const pages = {
+  windots: `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots</h2>
+    <p>
+      The original experimental operating system in the Windots universe.
+      It represents early-stage digital design where rules were not yet defined.
+    </p>
+    <p>
+      Everything is slightly chaotic: UI placement is inconsistent, visuals shift unpredictably,
+      and the system feels like a prototype of something that was never fully finished.
+    </p>
+  `,
+
+  "98": `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots 98</h2>
+    <p>
+      A retro-inspired version of Windots that focuses on structure and nostalgia.
+    </p>
+    <p>
+      It combines early desktop computing logic with simplified modern interpretation,
+      making it feel familiar but slightly fictional.
+    </p>
+  `,
+
+  xp: `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots XP</h2>
+    <p>
+      The beginning of the Frutiger Aero era inside Windots.
+    </p>
+    <p>
+      It introduces glossy UI elements, soft gradients, and atmospheric design,
+      creating a more emotional and “alive” interface experience.
+    </p>
+  `,
+
+  vista: `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots Vista</h2>
+    <p>
+      A visually heavy evolution of Windots XP.
+    </p>
+    <p>
+      Transparency effects and layered UI elements dominate the design,
+      making it visually impressive but more complex and resource-heavy.
+    </p>
+  `,
+
+  "81": `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots 8.1</h2>
+    <p>
+      A transition version moving toward Clean Core design philosophy.
+    </p>
+    <p>
+      It removes most decorative visuals and focuses on minimal structure,
+      efficiency, and clarity in layout.
+    </p>
+  `,
+
+  "9": `
+    <div class="back" onclick="showHome(); clickSound()">← Back</div>
+    <h2>Windots 9</h2>
+    <p>
+      A hybrid experimental system combining multiple eras of Windots design.
+    </p>
+    <p>
+      It attempts to merge nostalgic aesthetics with modern Clean Core logic,
+      resulting in an unstable but creative system.
+    </p>
+  `
+};
+
+/* ===== NAV ===== */
+function openPage(id) {
+  document.getElementById("home").classList.remove("active");
+  document.getElementById("aesthetics").classList.remove("active");
+  document.getElementById("page").classList.add("active");
+  document.getElementById("page").innerHTML = pages[id];
+}
+
+function showHome() {
+  document.getElementById("page").classList.remove("active");
+  document.getElementById("aesthetics").classList.remove("active");
+  document.getElementById("home").classList.add("active");
+}
+
+function showAesthetics() {
+  document.getElementById("home").classList.remove("active");
+  document.getElementById("page").classList.remove("active");
+  document.getElementById("aesthetics").classList.add("active");
+}
+
+/* SEARCH */
+function filterCards() {
+  const val = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".card").forEach(c => {
+    c.style.display = c.innerText.toLowerCase().includes(val) ? "block" : "none";
+  });
+}
+
+/* ===== SOUND (FIXED: browser unlock safe) ===== */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioCtx();
+
+/* unlock audio on first click */
+document.body.addEventListener("click", () => {
+  if (ctx.state === "suspended") ctx.resume();
+}, { once: true });
+
+function tone(f, t, type="sine", v=0.05) {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = type;
+  o.frequency.value = f;
+  g.gain.value = v;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  o.stop(ctx.currentTime + t);
+}
+
+/* sounds */
+function clickSound() {
+  tone(520, 0.05, "square", 0.03);
+}
+
+function softTick() {
+  tone(300, 0.03, "sine", 0.02);
+}
+
+function bootSound() {
+  setTimeout(() => tone(440, 0.12), 100);
+  setTimeout(() => tone(660, 0.18), 250);
+  setTimeout(() => tone(880, 0.25), 450);
+}
+
+</script>
+
+</body>
+</html>
